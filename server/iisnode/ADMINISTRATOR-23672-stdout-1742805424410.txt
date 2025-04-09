@@ -1,0 +1,14 @@
+Server running on port \\.\pipe\a86fe6ec-737a-4998-8e30-5e2a06a08bf7
+User connected: 67e0a7c08a1ba4452fa1c06c
+MongoDB Connected: localhost
+User 67e0a7c08a1ba4452fa1c06c joined conversation with 67e0a83c8a1ba4452fa1c16f
+User 67e0a7c08a1ba4452fa1c06c joined conversation with 67e0a83c8a1ba4452fa1c16f
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+User disconnected: 67e0a7c08a1ba4452fa1c06c

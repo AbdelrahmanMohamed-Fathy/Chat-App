@@ -1,0 +1,67 @@
+Server running on port \\.\pipe\3bb52f16-65db-4df8-a895-c8551377af96
+MongoDB Connected: localhost
+Socket authenticated for user: 67e0a7c08a1ba4452fa1c06c
+User connected: 67e0a7c08a1ba4452fa1c06c
+Online users: [ '67e0a7c08a1ba4452fa1c06c' ]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending statuses: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c joined conversation with 67e0a83c8a1ba4452fa1c16f
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending statuses: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending statuses: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending statuses: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User disconnected: 67e0a7c08a1ba4452fa1c06c

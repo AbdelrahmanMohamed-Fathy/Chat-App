@@ -1,0 +1,19 @@
+Warning: dotenv not loaded, using fallback values Error: ENOENT: no such file or directory, open 'C:\inetpub\wwwroot\chat-app\server\.env'
+    at Object.readFileSync (node:fs:442:20)
+    at Object.configDotenv (C:\inetpub\wwwroot\chat-app\node_modules\dotenv\lib\main.js:237:44)
+    at Object.config (C:\inetpub\wwwroot\chat-app\node_modules\dotenv\lib\main.js:266:25)
+    at Object.<anonymous> (C:\inetpub\wwwroot\chat-app\server\server.js:10:29)
+    at Module._compile (node:internal/modules/cjs/loader:1554:14)
+    at Object..js (node:internal/modules/cjs/loader:1706:10)
+    at Module.load (node:internal/modules/cjs/loader:1289:32)
+    at Function._load (node:internal/modules/cjs/loader:1108:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:220:24) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\inetpub\\wwwroot\\chat-app\\server\\.env'
+}
+WARNING: Using fallback encryption key. Set ENCRYPTION_KEY in your .env file for production.
+(node:1308) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

@@ -1,0 +1,867 @@
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Light theme variables */
+  --primary-color: #4361ee;
+  --primary-hover: #3a56d4;
+  --secondary-color: #4cc9f0;
+  --background-color: #f8f9fa;
+  --text-color: #212529;
+  --border-color: #e9ecef;
+  --error-color: #e63946;
+  --success-color: #2ec4b6;
+  --card-bg: white;
+  --input-bg: white;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --message-received-bg: #f1f1f1;
+  --message-time-color: #7f8c8d;
+  --tab-inactive-color: #7f8c8d;
+  --hover-bg: rgba(67, 97, 238, 0.05);
+  --active-item-bg: rgba(67, 97, 238, 0.1);
+  --typing-color: #7f8c8d;
+  --headings-color: #2c3e50;
+  --skeleton-color: #e2e8f0;
+  --skeleton-highlight: #f8fafc;
+}
+
+[data-theme="dark"] {
+  --primary-color: #6366f1;
+  --primary-hover: #818cf8;
+  --secondary-color: #60a5fa;
+  --background-color: #111827;
+  --text-color: #e5e7eb;
+  --border-color: #374151;
+  --error-color: #ef4444;
+  --success-color: #10b981;
+  --card-bg: #1f2937;
+  --input-bg: #374151;
+  --shadow-color: rgba(0, 0, 0, 0.25);
+  --message-received-bg: #374151;
+  --message-time-color: #9ca3af;
+  --tab-inactive-color: #9ca3af;
+  --hover-bg: rgba(99, 102, 241, 0.1);
+  --active-item-bg: rgba(99, 102, 241, 0.2);
+  --typing-color: #9ca3af;
+  --headings-color: #e5e7eb;
+  --skeleton-color: #374151;
+  --skeleton-highlight: #4b5563;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h2,
+h3 {
+  margin-bottom: 20px;
+  color: var(--headings-color);
+  transition: color 0.3s ease;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Theme Toggler */
+.theme-toggles {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
+
+.theme-toggle {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+.theme-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--text-color);
+  transition: fill 0.3s ease;
+}
+
+/* Button Styles */
+.btn {
+  padding: 10px 15px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.btn-small {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s,
+    color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.error-message {
+  color: var(--error-color);
+  margin-top: 10px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+/* Authentication Container */
+.auth-container {
+  max-width: 500px;
+  margin: 50px auto;
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tab-inactive-color);
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.tab-btn.active {
+  color: var(--primary-color);
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-color);
+  transition: background-color 0.3s ease;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Chat Container */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 320px;
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.user-info {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.search-box {
+  display: flex;
+  padding: 10px;
+  gap: 10px;
+}
+
+.user-list {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.user-list li {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s, border-color 0.3s ease;
+}
+
+.user-list li:hover {
+  background-color: var(--hover-bg);
+}
+
+.user-list .username {
+  font-weight: 600;
+}
+
+.user-list .unread-count {
+  background-color: var(--error-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.user-list .active {
+  background-color: var(--active-item-bg);
+  border-left: 3px solid var(--primary-color);
+}
+
+/* Chat Area */
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  transition: background-color 0.3s ease;
+}
+
+.chat-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  font-style: italic;
+  color: var(--typing-color);
+  font-size: 14px;
+  opacity: 0;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.typing-indicator.active {
+  opacity: 1;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.typing-indicator .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--typing-color);
+  margin-right: 3px;
+  animation: typingAnimation 1.5s infinite ease-in-out;
+}
+
+.typing-indicator .dots {
+  display: flex;
+  margin-left: 8px;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+}
+
+.messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 1px 2px var(--shadow-color);
+  transition: transform 0.2s ease;
+}
+
+.message:hover {
+  transform: translateY(-2px);
+}
+
+.message.sent {
+  align-self: flex-end;
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.received {
+  align-self: flex-start;
+  background-color: var(--message-received-bg);
+  color: var(--text-color);
+  border-bottom-left-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.message .time {
+  font-size: 12px;
+  position: absolute;
+  bottom: -15px;
+  right: 10px;
+  color: var(--message-time-color);
+  transition: color 0.3s ease;
+}
+
+.message-input {
+  display: flex;
+  padding: 15px 20px;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  gap: 10px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  position: relative;
+}
+
+.message-input textarea {
+  flex-grow: 1;
+  padding: 12px 15px;
+}
+
+/* Emoji Panel */
+.emoji-panel {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.emoji-panel.active {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+
+.emoji-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.emoji-btn:hover {
+  background-color: var(--hover-bg);
+}
+
+/* Message Status Indicators */
+.message .status {
+  font-size: 11px;
+  margin-top: 4px;
+  text-align: right;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.message.sent .status {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.message.sent .status[data-status="read"] {
+  opacity: 0.9;
+}
+
+.message.sent .status[data-status="failed"] {
+  color: var(--error-color);
+  opacity: 1;
+}
+
+/* Friend Request Buttons */
+.request-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.accept-btn {
+  background-color: var(--success-color);
+  transition: background-color 0.3s ease;
+}
+
+.accept-btn:hover {
+  background-color: var(--success-color);
+  filter: brightness(90%);
+}
+
+.reject-btn {
+  background-color: var(--error-color);
+  transition: background-color 0.3s ease;
+}
+
+.reject-btn:hover {
+  background-color: var(--error-color);
+  filter: brightness(90%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Glass morphism effect for cards */
+.glass-card {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+[data-theme="dark"] .glass-card {
+  background-color: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--tab-inactive-color);
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .chat-area {
+    height: 50vh;
+  }
+}
+
+/* Loading Spinners */
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 20px auto;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-color) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-color) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.skeleton.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton.text-sm {
+  width: 30%;
+  height: 12px;
+}
+
+.skeleton.text-md {
+  width: 60%;
+}
+
+.skeleton.text-lg {
+  width: 85%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Notification Badge */
+.notification-badge {
+  position: relative;
+}
+
+.notification-badge::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--error-color);
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  transform: scale(0);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.notification-badge.has-notifications::after {
+  transform: scale(1);
+}
+
+/* Page Transitions */
+.page-transition {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Better transitions for all interactive elements */
+button,
+a,
+.user-list li,
+.tab-btn {
+  transition: all 0.2s ease;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background-color: var(--status-offline-color);
+  box-shadow: 0 0 0 2px var(--card-bg);
+  transition: background-color 0.3s ease;
+}
+
+.status-online {
+  background-color: var(--status-online-color);
+  box-shadow: 0 0 4px 1px var(--status-online-color);
+}
+
+.status-offline {
+  background-color: var(--status-offline-color);
+  box-shadow: 0 0 2px 0 var(--status-offline-color);
+}
+
+.status-text {
+  font-size: 12px;
+  color: var(--tab-inactive-color);
+  transition: color 0.3s ease;
+  display: block;
+  margin-top: 2px;
+}
+
+.user-status-container {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.friend-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.friend-info > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* User status container in chat header */
+.user-status-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.status-wrapper .status-text {
+  margin-top: 0;
+}
+
+.chat-header .user-status-container h3 {
+  margin-bottom: 0;
+}
+
+/* User profile enhancements */
+.user-profile {
+  position: relative;
+}
+
+.status-indicator {
+  margin-right: 0;
+  transition: transform 0.2s ease;
+}
+
+.user-profile:hover .status-indicator,
+.friend-info:hover .status-indicator {
+  transform: scale(1.2);
+}
+
+/* Message status badges enhancements */
+.message .status {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.message .status[data-status="read"]::after {
+  content: "✓✓";
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.message .status[data-status="delivered"]::after {
+  content: "✓";
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.message .status[data-status="sending"]::after {
+  content: "⋯";
+  margin-left: 4px;
+  font-size: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+/* Additional animation refinements */
+.message,
+.notification-badge,
+.btn {
+  will-change: transform;
+}
+
+/* Improved focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Compact messages improvements */
+.compact-messages .message .content {
+  font-size: 0.95em;
+}
+
+.compact-messages .message .time {
+  font-size: 10px;
+  bottom: -12px;
+}
+
+.compact-messages .message .status {
+  font-size: 10px;
+}
+
+/* Additional responsive design enhancements */
+@media (max-width: 576px) {
+  .chat-container {
+    height: calc(100vh - 20px);
+    margin: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+}
+
+/* Touch improvements for mobile */
+@media (hover: none) {
+  .message:hover {
+    transform: none;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+}

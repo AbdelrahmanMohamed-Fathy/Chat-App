@@ -1,0 +1,2 @@
+Server running on port \\.\pipe\9ab1c290-c846-4899-9edb-2b36469abdb6
+MongoDB Connected: localhost

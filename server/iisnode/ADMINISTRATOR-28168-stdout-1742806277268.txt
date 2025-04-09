@@ -1,0 +1,134 @@
+Server running on port \\.\pipe\9aa5df71-eb51-40a8-83fe-dd1ff68fff58
+MongoDB Connected: localhost
+Socket authenticated for user: 67e0a7c08a1ba4452fa1c06c
+User connected: 67e0a7c08a1ba4452fa1c06c, Socket ID: qap0XjeFgCKq6H5IAAAB
+Current online users: [ '67e0a7c08a1ba4452fa1c06c' ]
+User 67e0a7c08a1ba4452fa1c06c joined conversation with 67e0a83c8a1ba4452fa1c16f
+User 67e0a7c08a1ba4452fa1c06c requested status for: [
+  '67e0a7c08a1ba4452fa1c06c',
+  '67e0a7d48a1ba4452fa1c07c',
+  '67e0a83c8a1ba4452fa1c16f'
+]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7c08a1ba4452fa1c06c',
+    status: 'online',
+    lastActive: 1742806279088
+  },
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User disconnected: 67e0a7c08a1ba4452fa1c06c, Socket ID: qap0XjeFgCKq6H5IAAAB
+User 67e0a7c08a1ba4452fa1c06c is now completely offline.
+Remaining online users: []
+Socket authenticated for user: 67e0a7c08a1ba4452fa1c06c
+User connected: 67e0a7c08a1ba4452fa1c06c, Socket ID: eTDIOMRMasdAipWnAAAD
+Current online users: [ '67e0a7c08a1ba4452fa1c06c' ]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c joined conversation with 67e0a83c8a1ba4452fa1c16f
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+Read receipt received: {
+  senderId: '67e0a83c8a1ba4452fa1c16f',
+  messageIds: [ '67e119c7494bb19b6c307fe6' ]
+}
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]
+User 67e0a7c08a1ba4452fa1c06c requested status for: [ '67e0a7d48a1ba4452fa1c07c', '67e0a83c8a1ba4452fa1c16f' ]
+Sending status updates to 67e0a7c08a1ba4452fa1c06c: [
+  {
+    userId: '67e0a7d48a1ba4452fa1c07c',
+    status: 'offline',
+    lastActive: null
+  },
+  {
+    userId: '67e0a83c8a1ba4452fa1c16f',
+    status: 'offline',
+    lastActive: null
+  }
+]

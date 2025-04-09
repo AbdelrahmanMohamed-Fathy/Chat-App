@@ -1,0 +1,4 @@
+Server running on port \\.\pipe\c8e54104-a7ac-4490-8d08-c51767cc912e
+MongoDB Connected: localhost
+User connected: 67e0a7c08a1ba4452fa1c06c
+User disconnected: 67e0a7c08a1ba4452fa1c06c

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+    <meta name="description" content="A modern real-time chat application" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234361ee' d='M12 1C5.9 1 1 5.9 1 12s4.9 11 11 11 11-4.9 11-11S18.1 1 12 1zm0 20c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm1-15c-1.7 0-3 1.3-3 3v3c0 1.7 1.3 3 3 3h2l2 3v-3c1.7 0 3-1.3 3-3v-3c0-1.7-1.3-3-3-3h-4z'/%3E%3C/svg%3E"
+    />
+    <!-- Preload notification sound -->
+    <audio id="notification-sound" preload="auto">
+      <source
+        src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAFmgD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwAc0AAAAAAAAAABQgJAiuQQABzAAABZoipqo1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="
+        type="audio/mpeg"
+      />
+    </audio>
+  </head>
+  <body>
+    <div class="theme-toggles">
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        aria-label="Toggle dark mode"
+      >
+        <svg
+          id="sun-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM5.636 5.636a.75.75 0 011.06 0l1.592 1.591a.75.75 0 11-1.061 1.06l-1.591-1.59a.75.75 0 010-1.061zm12.728 12.728a.75.75 0 011.06 0l1.591 1.592a.75.75 0 01-1.06 1.06l-1.592-1.591a.75.75 0 010-1.06zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm14.25-.75a.75.75 0 000 1.5h2.25a.75.75 0 000-1.5h-2.25zM5.636 18.364a.75.75 0 010-1.06l1.591-1.592a.75.75 0 111.061 1.06l-1.592 1.592a.75.75 0 01-1.06 0zM18.364 5.636a.75.75 0 010 1.061l-1.592 1.59a.75.75 0 11-1.06-1.06l1.591-1.59a.75.75 0 011.06 0z"
+          />
+        </svg>
+        <svg
+          id="moon-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          style="display: none"
+        >
+          <path
+            d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"
+          />
+        </svg>
+      </button>
+      <button
+        class="theme-toggle"
+        id="contrast-toggle"
+        aria-label="Toggle high contrast mode"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path
+            d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2V4a8 8 0 1 0 0 16z"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal backdrop -->
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+
+    <div class="chat-container">
+      <div class="sidebar glass-card">
+        <div class="user-info">
+          <div class="user-profile">
+            <span class="status-indicator status-online"></span>
+            <h3 id="current-username">Loading...</h3>
+          </div>
+          <button id="logout-btn" class="btn btn-small">Logout</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="friends">Friends</button>
+          <button
+            class="tab-btn notification-badge"
+            data-tab="requests"
+            data-count="0"
+          >
+            Requests
+          </button>
+          <button class="tab-btn" data-tab="search">Search</button>
+        </div>
+
+        <div class="tab-content active" id="friends">
+          <h3>Friends</h3>
+          <div id="friends-loading" class="loading-container">
+            <div class="spinner"></div>
+          </div>
+          <ul id="friends-list" class="user-list"></ul>
+        </div>
+
+        <div class="tab-content" id="requests">
+          <h3>Friend Requests</h3>
+          <div id="requests-loading" class="loading-container">
+            <div class="spinner"></div>
+          </div>
+          <ul id="requests-list" class="user-list"></ul>
+        </div>
+
+        <div class="tab-content" id="search">
+          <h3>Search Users</h3>
+          <div class="search-box">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search username..."
+            />
+            <button id="search-btn" class="btn btn-small">Search</button>
+          </div>
+          <div
+            id="search-loading"
+            class="loading-container"
+            style="display: none"
+          >
+            <div class="spinner"></div>
+          </div>
+          <ul id="search-results" class="user-list"></ul>
+        </div>
+      </div>
+
+      <div class="chat-area">
+        <div class="chat-header glass-card">
+          <h3 id="chat-user">Select a friend to start chatting</h3>
+          <div class="user-status-container">
+            <span class="status-indicator status-offline"></span>
+            <span class="status-text">Offline</span>
+          </div>
+          <div id="typing-indicator" class="typing-indicator">
+            <span class="typing-text"></span>
+            <div class="dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="messages-loading" class="loading-container">
+          <div class="spinner"></div>
+        </div>
+        <div class="messages" id="messages-container"></div>
+
+        <div class="message-input glass-card">
+          <textarea
+            id="message-input"
+            placeholder="Type a message..."
+            disabled
+          ></textarea>
+          <button id="send-btn" class="btn" disabled>Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard shortcuts help modal -->
+
+    <script src="js/chat.js"></script>
+    <script src="js/friends.js"></script>
+    <script src="js/settings.js"></script>
+    <script>
+      // Theme toggle functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const themeToggle = document.getElementById("theme-toggle");
+        const contrastToggle = document.getElementById("contrast-toggle");
+        const sunIcon = document.getElementById("sun-icon");
+        const moonIcon = document.getElementById("moon-icon");
+        const htmlElement = document.documentElement;
+        const modalBackdrop = document.getElementById("modal-backdrop");
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem("theme") || "light";
+        htmlElement.setAttribute("data-theme", savedTheme);
+
+        // Check for saved contrast preference
+        const savedContrast = localStorage.getItem("contrast") || "normal";
+        htmlElement.setAttribute("data-contrast", savedContrast);
+
+        // Update icons based on current theme
+        if (savedTheme === "dark") {
+          sunIcon.style.display = "none";
+          moonIcon.style.display = "block";
+        }
+
+        // Toggle theme when button is clicked
+        themeToggle.addEventListener("click", function () {
+          const currentTheme = htmlElement.getAttribute("data-theme");
+          const newTheme = currentTheme === "light" ? "dark" : "light";
+
+          htmlElement.setAttribute("data-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+
+          // Toggle icons
+          if (newTheme === "dark") {
+            sunIcon.style.display = "none";
+            moonIcon.style.display = "block";
+          } else {
+            sunIcon.style.display = "block";
+            moonIcon.style.display = "none";
+          }
+        });
+
+        // Toggle high contrast mode
+        contrastToggle.addEventListener("click", function () {
+          const currentContrast = htmlElement.getAttribute("data-contrast");
+          const newContrast = currentContrast === "normal" ? "high" : "normal";
+
+          htmlElement.setAttribute("data-contrast", newContrast);
+          localStorage.setItem("contrast", newContrast);
+        });
+
+        // Initialize emoji picker
+
+        // Toggle emoji picker
+
+        // Close emoji picker when clicking outside
+
+        // Keyboard shortcuts help modal
+        const shortcutsHelp = document.querySelector(".shortcuts-help");
+        const closeShortcuts = document.querySelector(".close-shortcuts");
+
+        // Show shortcuts help when ? key is pressed
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "?" && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            e.preventDefault();
+            shortcutsHelp.classList.add("active");
+            modalBackdrop.classList.add("active");
+          }
+        });
+
+        // Close shortcuts help
+        closeShortcuts.addEventListener("click", function () {
+          shortcutsHelp.classList.remove("active");
+          modalBackdrop.classList.remove("active");
+        });
+
+        // Also close shortcuts help when backdrop is clicked
+        modalBackdrop.addEventListener("click", function () {
+       
+          const settingsPanel = document.querySelector(".settings-panel");
+          if (settingsPanel && settingsPanel.classList.contains("active")) {
+            settingsPanel.classList.remove("active");
+          }
+          modalBackdrop.classList.remove("active");
+        });
+      });
+    </script>
+  </body>
+</html>
