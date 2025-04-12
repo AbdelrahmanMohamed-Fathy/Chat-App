@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const multer = require("multer");
+const fs = require("fs");
 
 // Load environment variables - used for encryption keys
 // Do this as early as possible, before requiring other modules
@@ -127,6 +129,7 @@ const server = app.listen(PORT, () => {
 
 // Initialize socket.io
 const io = require('socket.io')(server, {
+
   transports: ['websocket', 'polling'],});
 
 
@@ -429,3 +432,36 @@ io.on("connection", (socket) => {
     }
   });
 });
+// Add support for image upload with local storage
+
+// Configure multer for file uploads
+const upload = multer({
+  dest: path.join(__dirname, "../uploads/"), // Directory to store uploaded files
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files are allowed"), false);
+    }
+    cb(null, true);
+  },
+});
+
+// Ensure the uploads directory exists
+const uploadsDir = path.join(__dirname, "../uploads/");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Endpoint to handle image uploads
+app.post("/api/upload", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const filePath = `/uploads/${req.file.filename}`;
+  res.status(200).json({ message: "Image uploaded successfully", filePath });
+});
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(uploadsDir));

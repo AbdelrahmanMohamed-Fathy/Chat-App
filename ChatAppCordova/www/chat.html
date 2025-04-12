@@ -220,25 +220,40 @@
         // Keyboard shortcuts help modal
         const shortcutsHelp = document.querySelector(".shortcuts-help");
         const closeShortcuts = document.querySelector(".close-shortcuts");
+        if (closeShortcuts) {
+          // Show shortcuts help when ? key is pressed
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "?" && !e.ctrlKey && !e.altKey && !e.metaKey) {
+              e.preventDefault();
+              shortcutsHelp.classList.add("active");
+              modalBackdrop.classList.add("active");
+            }
+          });
 
-        // Show shortcuts help when ? key is pressed
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "?" && !e.ctrlKey && !e.altKey && !e.metaKey) {
-            e.preventDefault();
-            shortcutsHelp.classList.add("active");
-            modalBackdrop.classList.add("active");
-          }
-        });
+          // Close shortcuts help
+          closeShortcuts.addEventListener("click", function () {
+            shortcutsHelp.classList.remove("active");
+            modalBackdrop.classList.remove("active");
+          });
+        }
 
-        // Close shortcuts help
-        closeShortcuts.addEventListener("click", function () {
-          shortcutsHelp.classList.remove("active");
-          modalBackdrop.classList.remove("active");
-        });
+        // // Show shortcuts help when ? key is pressed
+        // document.addEventListener("keydown", function (e) {
+        //   if (e.key === "?" && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        //     e.preventDefault();
+        //     shortcutsHelp.classList.add("active");
+        //     modalBackdrop.classList.add("active");
+        //   }
+        // });
+
+        // // Close shortcuts help
+        // closeShortcuts.addEventListener("click", function () {
+        //   shortcutsHelp.classList.remove("active");
+        //   modalBackdrop.classList.remove("active");
+        // });
 
         // Also close shortcuts help when backdrop is clicked
         modalBackdrop.addEventListener("click", function () {
-       
           const settingsPanel = document.querySelector(".settings-panel");
           if (settingsPanel && settingsPanel.classList.contains("active")) {
             settingsPanel.classList.remove("active");

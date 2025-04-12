@@ -40,13 +40,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("login-password").value;
 
     try {
-      const response = await fetch("/api/auth/login", {
+      console.log("Logging in..."); // Debugging line
+      const response = await fetch("http://192.168.1.10:3000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
       });
+
 
       const data = await response.json();
 
@@ -60,7 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("username", data.username);
 
       // Redirect to chat
-      window.location.href = "/chat.html";
+      // window.location.href = "/chat.html";
+      window.location.href = "chat.html"; // Or relative to root if packaged
+
     } catch (error) {
       loginError.textContent = error.message;
     }
@@ -84,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("http://192.168.1.10:3000/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

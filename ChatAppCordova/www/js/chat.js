@@ -76,21 +76,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to initialize socket.io connection
   function initializeSocket() {
+
     try {
       console.log(
         "Initializing socket connection with token present:",
         !!token
       );
 
-      // Initialize socket.io connection with auth token
-      socket = io({
+      // // Initialize socket.io connection with auth token
+      // socket = io({
+      //   auth: {
+      //     token: token,
+      //   },
+      //   reconnection: true,
+      //   reconnectionAttempts: 5,
+      //   reconnectionDelay: 1000,
+      //   transports: ["websocket", "polling"], // explicitly specify transports
+      // });
+      const socketUrl = window.location.protocol === "https:" ? "wss://" : "ws://";
+      socket = io(socketUrl + "192.168.1.10:3000", {
         auth: {
           token: token,
         },
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
-        transports: ["websocket", "polling"], // explicitly specify transports
+        transports: ["websocket", "polling"],
       });
 
       // Handle connection events
@@ -338,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return; // Will be updated when response comes back
       } else if (!userStatus) {
         // Fallback to API if socket not available
-        const response = await fetch(`/api/users/status/${targetUserId}`, {
+        const response = await fetch(`http://192.168.1.10:3000/api/users/status/${targetUserId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -597,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Send message to server via REST API (for persistence) and WebSocket (for real-time)
-      const response = await fetch("/api/messages", {
+      const response = await fetch("http://192.168.1.10:3000/api/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -709,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch(`/api/messages/${user.id}`, {
+      const response = await fetch(`http://192.168.1.10:3000/api/messages/${user.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
