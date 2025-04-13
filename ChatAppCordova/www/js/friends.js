@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Fetching user statuses via HTTP:", userIds);
     try {
-      const response = await fetch("http://192.168.1.10:3000/api/users/status", {
+      const response = await fetch(backendUrl + "/api/users/status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
       friendsList.style.display = "none";
 
       // Get friends
-      const friendsResponse = await fetch("http://192.168.1.10:3000/api/users/friends", {
+      const friendsResponse = await fetch(backendUrl + "/api/users/friends", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Get unread message counts
-      const unreadResponse = await fetch("http://192.168.1.10:3000/api/messages/unread", {
+      const unreadResponse = await fetch(backendUrl + "/api/messages/unread", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
       requestsLoading.style.display = "flex";
       requestsList.style.display = "none";
 
-      const response = await fetch("http://192.168.1.10:3000/api/users/friend-requests", {
+      const response = await fetch(backendUrl + "/api/users/friend-requests", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -431,14 +431,17 @@ document.addEventListener("DOMContentLoaded", () => {
           status === "accepted" ? "Accepting..." : "Rejecting...";
       });
 
-      const response = await fetch(`http://192.168.1.10:3000/api/users/friend-request/${requestId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status }),
-      });
+      const response = await fetch(
+        backendUrl + `/api/users/friend-request/${requestId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
 
       const data = await response.json();
 
@@ -495,11 +498,14 @@ document.addEventListener("DOMContentLoaded", () => {
     searchResults.style.display = "none";
 
     try {
-      const response = await fetch(`http://192.168.1.10:3000/api/users/search?username=${query}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        backendUrl + `/api/users/search?username=${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const users = await response.json();
 
@@ -564,7 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Send friend request
   async function sendFriendRequest(recipientId, buttonElement) {
     try {
-      const response = await fetch("http://192.168.1.10:3000/api/users/friend-request", {
+      const response = await fetch(backendUrl + "/api/users/friend-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

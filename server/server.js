@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
-const multer = require("multer");
 const fs = require("fs");
 
 // Load environment variables - used for encryption keys
@@ -32,11 +31,13 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.options("*", (req, res) => res.sendStatus(200));
 
 const PORT = process.env.PORT || 3000;
@@ -48,6 +49,15 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+// Serve static files from the uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Make sure your uploads directory exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Track online users and their last activity
 const onlineUsers = new Map();
@@ -128,10 +138,9 @@ const server = app.listen(PORT, () => {
 });
 
 // Initialize socket.io
-const io = require('socket.io')(server, {
-
-  transports: ['websocket', 'polling'],});
-
+const io = require("socket.io")(server, {
+  transports: ["websocket", "polling"],
+});
 
 // Socket authentication middleware
 io.use((socket, next) => {
@@ -253,7 +262,8 @@ io.on("connection", (socket) => {
   // Listen for new messages
   socket.on("message:send", async (data) => {
     try {
-      const { recipientId, content } = data;
+      const { recipientId, content, messageType, imageData, imageMimeType } =
+        data;
 
       // Update last activity
       userLastActivity.set(userId, Date.now());
@@ -268,14 +278,28 @@ io.on("connection", (socket) => {
       // Check if recipient is online
       const isRecipientOnline = onlineUsers.has(recipientId);
 
-      // Send message to recipient if they're online
-      io.to(recipientId).emit("message:new", {
+      // Prepare the message data to send to recipient
+      const messageData = {
         id: messageId,
-        content,
         sender: userId,
         senderName: data.senderName || "User",
         createdAt: new Date(),
-      });
+        messageType: messageType || "text",
+      };
+
+      // Add appropriate content based on message type
+      if (messageType === "image") {
+        messageData.imageData = imageData;
+        messageData.imageMimeType = imageMimeType;
+        if (content) {
+          messageData.content = content;
+        }
+      } else {
+        messageData.content = content;
+      }
+
+      // Send message to recipient if they're online
+      io.to(recipientId).emit("message:new", messageData);
 
       // Send delivery receipt to sender
       socket.emit("message:status", {
@@ -432,36 +456,3 @@ io.on("connection", (socket) => {
     }
   });
 });
-// Add support for image upload with local storage
-
-// Configure multer for file uploads
-const upload = multer({
-  dest: path.join(__dirname, "../uploads/"), // Directory to store uploaded files
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-  fileFilter: (req, file, cb) => {
-    // Accept only image files
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed"), false);
-    }
-    cb(null, true);
-  },
-});
-
-// Ensure the uploads directory exists
-const uploadsDir = path.join(__dirname, "../uploads/");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-// Endpoint to handle image uploads
-app.post("/api/upload", upload.single("image"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-
-  const filePath = `/uploads/${req.file.filename}`;
-  res.status(200).json({ message: "Image uploaded successfully", filePath });
-});
-
-// Serve uploaded images statically
-app.use("/uploads", express.static(uploadsDir));

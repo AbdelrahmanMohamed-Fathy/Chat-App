@@ -1,3 +1,6 @@
+const backendIp = "192.168.1.108:3000";
+const backendUrl = "http://" + backendIp;
+
 // Chat functionality
 document.addEventListener("DOMContentLoaded", () => {
   // Check if user is logged in
@@ -76,25 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to initialize socket.io connection
   function initializeSocket() {
-
     try {
       console.log(
         "Initializing socket connection with token present:",
         !!token
       );
 
-      // // Initialize socket.io connection with auth token
-      // socket = io({
-      //   auth: {
-      //     token: token,
-      //   },
-      //   reconnection: true,
-      //   reconnectionAttempts: 5,
-      //   reconnectionDelay: 1000,
-      //   transports: ["websocket", "polling"], // explicitly specify transports
-      // });
-      const socketUrl = window.location.protocol === "https:" ? "wss://" : "ws://";
-      socket = io(socketUrl + "192.168.1.10:3000", {
+      const socketUrl =
+        window.location.protocol === "https:" ? "wss://" : "ws://";
+      socket = io(socketUrl + backendIp, {
         auth: {
           token: token,
         },
@@ -349,11 +342,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return; // Will be updated when response comes back
       } else if (!userStatus) {
         // Fallback to API if socket not available
-        const response = await fetch(`http://192.168.1.10:3000/api/users/status/${targetUserId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          backendUrl + `/api/users/status/${targetUserId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch user status");
@@ -523,57 +519,21 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(`Status element not found in message: ${messageId}`);
     }
   }
-
+  // Create file input element for image selection
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.capture = "environment";
+  fileInput.style.display = "none";
+  document.body.appendChild(fileInput);
   // Message sending
   const messageInput = document.getElementById("message-input");
   const sendBtn = document.getElementById("send-btn");
+  const uploadBtn = document.getElementById("upload-btn");
 
   sendBtn.addEventListener("click", () => {
     sendMessage();
   });
-
-  messageInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-      return;
-    }
-
-    // Handle typing indicator with WebSockets
-    if (socket && socket.connected && currentChatUser) {
-      if (messageInput.value.trim().length > 0) {
-        // Send typing indicator
-        socket.emit("user:typing", {
-          recipientId: currentChatUser.id,
-          isTyping: true,
-        });
-
-        // Clear previous timeout
-        clearTimeout(typingTimeout);
-
-        // Set timeout to clear typing indicator after 2 seconds of no typing
-        typingTimeout = setTimeout(() => {
-          if (socket && socket.connected && currentChatUser) {
-            socket.emit("user:typing", {
-              recipientId: currentChatUser.id,
-              isTyping: false,
-            });
-          }
-        }, 2000);
-      }
-    }
-  });
-
-  // Helper function to sanitize text with emojis
-  function sanitizeText(text) {
-    // First encode any HTML entities to prevent XSS
-    const div = document.createElement("div");
-    div.textContent = text;
-    const sanitized = div.innerHTML;
-
-    // Return the sanitized text
-    return sanitized;
-  }
 
   async function sendMessage() {
     if (!currentChatUser || !messageInput.value.trim()) {
@@ -608,7 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Send message to server via REST API (for persistence) and WebSocket (for real-time)
-      const response = await fetch("http://192.168.1.10:3000/api/messages", {
+      const response = await fetch(backendUrl + "/api/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -685,42 +645,433 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Load conversation with a user
+  function sanitizeText(text) {
+    // First encode any HTML entities to prevent XSS
+    const div = document.createElement("div");
+    div.textContent = text;
+    const sanitized = div.innerHTML;
+
+    // Return the sanitized text
+    return sanitized;
+  }
+
+  // Add gallery button event listener to trigger file selection
+  uploadBtn.addEventListener("click", () => {
+    fileInput.setAttribute("capture", "environment");
+    fileInput.click();
+  });
+
+  // Handle file selection with automatic resizing to prevent payload too large errors
+  fileInput.addEventListener("change", (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+
+      console.log(
+        "Selected file:",
+        file.name,
+        "Type:",
+        file.type,
+        "Size:",
+        Math.round(file.size / 1024),
+        "KB"
+      );
+
+      // Always compress images to prevent PayloadTooLargeError
+      // Express default body size limit is typically 1MB
+      resizeAndCompressImage(file);
+    }
+  });
+
+  // Function to resize and compress images before upload
+  function resizeAndCompressImage(file) {
+    const tempId = Date.now().toString();
+
+    // Show a loading message in the chat
+    const messageElement = appendMessage(
+      {
+        id: tempId,
+        content: `<div class="message-image-loading">Processing image: ${
+          file.name
+        } (${Math.round(file.size / 1024)} KB)...</div>`,
+        createdAt: new Date(),
+        status: "processing",
+      },
+      true
+    );
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = function (e) {
+      const img = new Image();
+      img.src = e.target.result;
+
+      img.onload = function () {
+        // Create canvas for resizing
+        const canvas = document.createElement("canvas");
+
+        // Calculate new dimensions (max 800px wide/tall)
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 800;
+
+        if (width > height) {
+          if (width > maxDimension) {
+            height *= maxDimension / width;
+            width = maxDimension;
+          }
+        } else {
+          if (height > maxDimension) {
+            width *= maxDimension / height;
+            height = maxDimension;
+          }
+        }
+
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw resized image on canvas
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Get compressed image as data URL (0.7 quality - good balance)
+        const compressedDataUrl = canvas.toDataURL(
+          file.type || "image/jpeg",
+          0.7
+        );
+
+        // Calculate and log size differences
+        const originalKB = Math.round(file.size / 1024);
+        const compressedKB = Math.round(
+          (compressedDataUrl.length * 3) / 4 / 1024
+        );
+        console.log(
+          `Original: ${originalKB}KB, Compressed: ${compressedKB}KB, Reduction: ${Math.round(
+            (1 - compressedKB / originalKB) * 100
+          )}%`
+        );
+
+        // Update message to show compression info
+        const contentElement = messageElement.querySelector(".content");
+        if (contentElement) {
+          contentElement.innerHTML = `<div class="message-image-loading">Sending image: ${file.name} (Compressed: ${compressedKB} KB)</div>`;
+        }
+
+        // If image is still too large (over 750KB after compression), compress further
+        if (compressedKB > 750) {
+          console.log("Image still large, applying stronger compression...");
+          const strongerCompression = canvas.toDataURL("image/jpeg", 0.5);
+          const finalKB = Math.round(
+            (strongerCompression.length * 3) / 4 / 1024
+          );
+          console.log(`Final compressed size: ${finalKB}KB`);
+
+          // Extract base64 data and send
+          const imageData = strongerCompression.split(",")[1];
+          sendImageToServer(tempId, imageData, "image/jpeg", file.name, true);
+        } else {
+          // Extract base64 data and send
+          const imageData = compressedDataUrl.split(",")[1];
+          sendImageToServer(
+            tempId,
+            imageData,
+            file.type || "image/jpeg",
+            file.name,
+            false
+          );
+        }
+      };
+    };
+
+    reader.onerror = function (e) {
+      console.error("Error reading file:", e);
+      updateMessageStatus(tempId, "failed");
+
+      const contentElement = messageElement.querySelector(".content");
+      if (contentElement) {
+        contentElement.innerHTML = `<div class="error-message">Error reading image file. Please try another image.</div>`;
+      }
+    };
+  }
+
+  // Function to send image to server - updated to handle server size limits
+  function sendImageToServer(
+    tempId,
+    imageData,
+    mimeType,
+    fileName,
+    wasCompressed
+  ) {
+    if (!currentChatUser) {
+      console.error("No chat recipient selected");
+      updateMessageStatus(tempId, "failed");
+      return;
+    }
+
+    const sizeKB = Math.round((imageData.length * 3) / 4 / 1024);
+    console.log(`Sending image, final size: ${sizeKB}KB`);
+
+    // Update status in UI to show progress
+    const messageElement = document.querySelector(
+      `.message[data-id="${tempId}"]`
+    );
+    if (messageElement) {
+      const statusElement = messageElement.querySelector(".status");
+      if (statusElement) {
+        statusElement.textContent = "Uploading...";
+        statusElement.setAttribute("data-status", "uploading");
+      }
+    }
+
+    // Send image using the message endpoint (with size check)
+    fetch(backendUrl + "/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        recipientId: currentChatUser.id,
+        messageType: "image",
+        imageData: imageData,
+        imageMimeType: mimeType,
+        content: wasCompressed ? "[Compressed image]" : "[Image]",
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.error("Server error status:", response.status);
+
+          if (response.status === 413) {
+            throw new Error(
+              "Image too large for server. It has been compressed but is still too large."
+            );
+          }
+
+          return response.text().then((text) => {
+            console.error("Server error details:", text);
+            throw new Error(`Server error: ${response.status}`);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Image sent successfully:", data);
+
+        // Update the message with actual content and ID
+        if (messageElement) {
+          // Update with real ID from server
+          messageElement.setAttribute("data-id", data._id || data.id);
+
+          // Update content with actual image
+          const contentElement = messageElement.querySelector(".content");
+          if (contentElement) {
+            contentElement.innerHTML = `<img src="data:${mimeType};base64,${imageData}" class="message-image" alt="Sent image">`;
+
+            // Add compression indicator if applicable
+            if (wasCompressed) {
+              contentElement.innerHTML += `<div class="compression-note">Image was compressed for sending</div>`;
+            }
+          }
+
+          // Update status
+          updateMessageStatus(data._id || data.id, "sent");
+        }
+      })
+      .catch((error) => {
+        console.error("Error sending image:", error);
+        updateMessageStatus(tempId, "failed");
+
+        // Add error message and retry options to the message
+        if (messageElement) {
+          const contentElement = messageElement.querySelector(".content");
+          if (contentElement) {
+            // Show error message
+            contentElement.innerHTML = `
+            <div class="error-message">
+              <strong>Failed to send image:</strong> ${error.message}
+            </div>
+          `;
+          }
+
+          // Add compression + retry option
+          const actionContainer = document.createElement("div");
+          actionContainer.className = "message-actions";
+
+          // Add compress more button
+          const compressMoreBtn = document.createElement("button");
+          compressMoreBtn.textContent = "Compress More & Retry";
+          compressMoreBtn.className = "compress-btn";
+          compressMoreBtn.addEventListener("click", () => {
+            // Create a more severely compressed version
+            const img = new Image();
+            img.src = `data:${mimeType};base64,${imageData}`;
+
+            img.onload = function () {
+              const canvas = document.createElement("canvas");
+              // Reduce dimensions to 600px max
+              let width = img.width;
+              let height = img.height;
+              const maxDim = 600;
+
+              if (width > height) {
+                if (width > maxDim) {
+                  height *= maxDim / width;
+                  width = maxDim;
+                }
+              } else {
+                if (height > maxDim) {
+                  width *= maxDim / height;
+                  height = maxDim;
+                }
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, width, height);
+
+              // Use very low quality (0.3) for extreme compression
+              const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.3);
+              const compressedImageData = compressedDataUrl.split(",")[1];
+
+              // Update UI
+              contentElement.innerHTML = `<div class="message-image-loading">Retrying with extreme compression...</div>`;
+
+              // Try sending again
+              sendImageToServer(
+                tempId,
+                compressedImageData,
+                "image/jpeg",
+                fileName,
+                true
+              );
+            };
+
+            actionContainer.remove();
+          });
+
+          // Add "select different" button
+          const newImageBtn = document.createElement("button");
+          newImageBtn.textContent = "Select Different Image";
+          newImageBtn.className = "new-image-btn";
+          newImageBtn.addEventListener("click", () => {
+            // Remove this message
+            messageElement.remove();
+
+            // Trigger file selection dialog
+            fileInput.click();
+          });
+
+          actionContainer.appendChild(compressMoreBtn);
+          actionContainer.appendChild(newImageBtn);
+          messageElement.appendChild(actionContainer);
+        }
+      });
+  }
+
+  // Add CSS for image messaging UI
+  const customStyles = document.createElement("style");
+  customStyles.textContent = `
+    .message-image-loading {
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      margin-bottom: 5px;
+      font-style: italic;
+    }
+    
+    .message-image {
+      max-width: 250px;
+      max-height: 250px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .message-image:hover {
+      transform: scale(1.03);
+    }
+    
+    .image-container {
+      position: relative;
+    }
+    
+    .compression-note {
+      font-size: 10px;
+      color: var(--text-muted, #888);
+      margin-top: 4px;
+      font-style: italic;
+    }
+    
+    .message-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+    
+    .compress-btn, .new-image-btn {
+      background-color: var(--primary-color, #4361ee);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .compress-btn {
+      background-color: var(--success-color, #2e7d32);
+    }
+    
+    .new-image-btn {
+      background-color: var(--secondary-color, #6c757d);
+    }
+    
+    .error-message {
+      color: var(--error-color, #d32f2f);
+      padding: 8px;
+      background-color: rgba(211, 47, 47, 0.1);
+      border-radius: 4px;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  `;
+  document.head.appendChild(customStyles);
+
+  // Update the loadConversation function to handle image messages better
   async function loadConversation(user) {
-    // Clear any existing status polling interval
     if (window.statusPolling) {
       clearInterval(window.statusPolling);
     }
 
     currentChatUser = user;
 
-    // Update header
     const chatUserElement = document.getElementById("chat-user");
     chatUserElement.textContent = user.username;
 
-    // Update status in the header
     updateChatHeaderStatus(user.id);
 
-    // Clear previous messages
     const messagesContainer = document.getElementById("messages-container");
     messagesContainer.innerHTML = "";
 
-    // Show loading spinner
     const messagesLoading = document.getElementById("messages-loading");
     if (messagesLoading) messagesLoading.style.display = "flex";
     if (messagesContainer) messagesContainer.style.display = "none";
 
-    // Enable input
     messageInput.disabled = false;
     sendBtn.disabled = false;
+    uploadBtn.disabled = false;
 
-    // Join this conversation via socket if connected
     if (socket && socket.connected) {
       socket.emit("join:conversation", { userId: user.id });
     }
 
     try {
-      const response = await fetch(`http://192.168.1.10:3000/api/messages/${user.id}`, {
+      const response = await fetch(backendUrl + `/api/messages/${user.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -732,17 +1083,14 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(data.message || "Failed to load conversation");
       }
 
-      // Hide loading spinner and show messages
       if (messagesLoading) messagesLoading.style.display = "none";
       if (messagesContainer) messagesContainer.style.display = "flex";
 
-      // Check if we have valid messages
       if (!Array.isArray(data)) {
         console.error("Invalid response format:", data);
         throw new Error("Invalid response format from server");
       }
 
-      // Check if the user selection has changed during the async call
       if (currentChatUser.id !== user.id) {
         console.log("User changed during conversation load, aborting render");
         return;
@@ -750,26 +1098,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const messages = data;
 
-      // Display messages
       messages.forEach((message) => {
         const isSent =
           message.sender === userId || message.sender._id === userId;
         appendMessage(message, isSent);
 
-        // If this message is sent by us and has a status, store it
         if (isSent && message.status) {
           messageStatuses.set(message.id || message._id, message.status);
         }
       });
 
-      // Scroll to bottom
       if (messagesContainer)
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-      // Reset unread count for this user
       unreadMessages[user.id] = 0;
 
-      // Update the friends list to reflect the updated unread count
       if (typeof loadFriendsList === "function") {
         loadFriendsList();
       } else if (
@@ -779,9 +1122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.friendsFunctions.loadFriendsList();
       }
 
-      // Mark messages as read via socket
       if (socket && socket.connected) {
-        // Collect message IDs to mark as read
         const unreadMessageIds = messages
           .filter(
             (msg) =>
@@ -791,13 +1132,11 @@ document.addEventListener("DOMContentLoaded", () => {
           .map((msg) => msg.id || msg._id);
 
         if (unreadMessageIds.length > 0) {
-          // Notify the sender that messages have been read
           socket.emit("message:read", {
             senderId: user.id,
             messageIds: unreadMessageIds,
           });
 
-          // Mark messages as read locally
           unreadMessageIds.forEach((messageId) => {
             const messageElement = document.querySelector(
               `.message[data-id="${messageId}"]`
@@ -823,7 +1162,6 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-        // Add retry button handler
         const retryBtn = document.getElementById("retry-load-btn");
         if (retryBtn) {
           retryBtn.addEventListener("click", () => loadConversation(user));
@@ -836,7 +1174,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function appendMessage(message, isSent) {
     const messagesContainer = document.getElementById("messages-container");
 
-    // Prevent duplicate messages
     const messageId = message.id || message._id;
     const existingMessage = document.querySelector(
       `.message[data-id="${messageId}"]`
@@ -848,7 +1185,11 @@ document.addEventListener("DOMContentLoaded", () => {
     messageElement.classList.add(isSent ? "sent" : "received");
     messageElement.setAttribute("data-id", messageId);
 
-    // Format time
+    const isImageMessage =
+      message.messageType === "image" ||
+      (message.content && message.content.includes("<img")) ||
+      message.imageData;
+
     const time = new Date(message.createdAt || Date.now()).toLocaleTimeString(
       [],
       {
@@ -857,69 +1198,69 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     );
 
-    // Determine message status if sent by current user
     let statusHTML = "";
     if (isSent) {
-      // Get status from our map or from the message
       let status = messageStatuses.get(messageId) || message.status || "sent";
       statusHTML = `<div class="status" data-status="${status}">${
         status.charAt(0).toUpperCase() + status.slice(1)
       }</div>`;
     }
 
-    // Make sure the content is set safely
     const contentElement = document.createElement("div");
     contentElement.classList.add("content");
-    contentElement.textContent = message.content; // This handles emojis safely
 
-    // Create a temporary container for the message structure
+    if (isImageMessage) {
+      contentElement.classList.add("image-container");
+
+      if (message.imageData && message.imageMimeType) {
+        contentElement.innerHTML = `<img src="data:${message.imageMimeType};base64,${message.imageData}" class="message-image" alt="Shared image">`;
+      } else {
+        contentElement.innerHTML = message.content;
+      }
+    } else {
+      contentElement.innerHTML = message.content;
+    }
+
     const tempContainer = document.createElement("div");
     tempContainer.innerHTML = `
       <div class="time">${time}</div>
       ${statusHTML}
     `;
 
-    // Add the elements to the message
     messageElement.appendChild(contentElement);
-    // Add the other elements from the tempContainer
     while (tempContainer.firstChild) {
       messageElement.appendChild(tempContainer.firstChild);
     }
 
     messagesContainer.appendChild(messageElement);
 
-    // Scroll to new message
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // If it's a received message (not from current user), play notification sound
     if (!isSent && document.visibilityState === "visible") {
       playNotificationSound();
     }
+
+    return messageElement;
   }
 
-  // Initialize socket
   initializeSocket();
 
-  // Initial request for notification permission (on user interaction)
   document.body.addEventListener(
     "click",
     function requestNotificationPermission() {
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
-      // Remove event listener after first click
       document.body.removeEventListener("click", requestNotificationPermission);
     },
     { once: true }
   );
 
-  // Handle message reactions
   document.addEventListener("click", (e) => {
     if (e.target.closest(".message") && !e.target.closest(".reaction")) {
       const message = e.target.closest(".message");
       const reactionBar = message.querySelector(".reaction-bar");
 
-      // Toggle reaction bar visibility with a small delay
       setTimeout(() => {
         document.querySelectorAll(".reaction-bar").forEach((bar) => {
           if (bar !== reactionBar) {
@@ -933,16 +1274,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Add keyboard shortcuts
   document.addEventListener("keydown", (e) => {
-    // Only if shortcuts are enabled in settings
     if (
       window.userSettings &&
       !window.userSettings.accessibility.keyboardShortcuts
     )
       return;
 
-    // Ctrl/Cmd + Enter to send message
     if (
       (e.ctrlKey || e.metaKey) &&
       e.key === "Enter" &&
@@ -952,19 +1290,16 @@ document.addEventListener("DOMContentLoaded", () => {
       sendMessage();
     }
 
-    // Alt + F to focus search
     if (e.altKey && e.key === "f") {
       e.preventDefault();
       document.getElementById("search-input").focus();
     }
 
-    // Esc to blur input
     if (e.key === "Escape" && messageInput === document.activeElement) {
       messageInput.blur();
     }
   });
 
-  // Add visibility change handler to update read receipts when returning to tab
   document.addEventListener("visibilitychange", () => {
     if (
       document.visibilityState === "visible" &&
@@ -972,7 +1307,6 @@ document.addEventListener("DOMContentLoaded", () => {
       socket &&
       socket.connected
     ) {
-      // When tab becomes visible, send read receipts for any unread messages
       const unreadMessages = document.querySelectorAll(
         `.message.received:not([data-read="true"])`
       );
@@ -988,7 +1322,6 @@ document.addEventListener("DOMContentLoaded", () => {
             messageIds: messageIds,
           });
 
-          // Mark them as read locally
           unreadMessages.forEach((msg) => {
             msg.setAttribute("data-read", "true");
           });
@@ -997,7 +1330,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Expose functions for use in friends.js
   window.chatFunctions = {
     loadConversation,
     get currentChatUser() {

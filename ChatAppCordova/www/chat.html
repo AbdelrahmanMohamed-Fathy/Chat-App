@@ -15,23 +15,15 @@
     <!-- Preload notification sound -->
     <audio id="notification-sound" preload="auto">
       <source
-        src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAFmgD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwAc0AAAAAAAAAABQgJAiuQQABzAAABZoipqo1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="
+        src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAFmgD///////////////////////////////////////////8AAAA8TEFNRTMuMTAwAc0AAAAAAAAAABQgJAiuQQABzAAABZoipqo1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="
         type="audio/mpeg"
       />
     </audio>
   </head>
   <body>
     <div class="theme-toggles">
-      <button
-        class="theme-toggle"
-        id="theme-toggle"
-        aria-label="Toggle dark mode"
-      >
-        <svg
-          id="sun-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path
             d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM5.636 5.636a.75.75 0 011.06 0l1.592 1.591a.75.75 0 11-1.061 1.06l-1.591-1.59a.75.75 0 010-1.061zm12.728 12.728a.75.75 0 011.06 0l1.591 1.592a.75.75 0 01-1.06 1.06l-1.592-1.591a.75.75 0 010-1.06zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm14.25-.75a.75.75 0 000 1.5h2.25a.75.75 0 000-1.5h-2.25zM5.636 18.364a.75.75 0 010-1.06l1.591-1.592a.75.75 0 111.061 1.06l-1.592 1.592a.75.75 0 01-1.06 0zM18.364 5.636a.75.75 0 010 1.061l-1.592 1.59a.75.75 0 11-1.06-1.06l1.591-1.59a.75.75 0 011.06 0z"
           />
@@ -47,11 +39,7 @@
           />
         </svg>
       </button>
-      <button
-        class="theme-toggle"
-        id="contrast-toggle"
-        aria-label="Toggle high contrast mode"
-      >
+      <button class="theme-toggle" id="contrast-toggle" aria-label="Toggle high contrast mode">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path
             d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2V4a8 8 0 1 0 0 16z"
@@ -75,11 +63,7 @@
 
         <div class="tabs">
           <button class="tab-btn active" data-tab="friends">Friends</button>
-          <button
-            class="tab-btn notification-badge"
-            data-tab="requests"
-            data-count="0"
-          >
+          <button class="tab-btn notification-badge" data-tab="requests" data-count="0">
             Requests
           </button>
           <button class="tab-btn" data-tab="search">Search</button>
@@ -104,18 +88,10 @@
         <div class="tab-content" id="search">
           <h3>Search Users</h3>
           <div class="search-box">
-            <input
-              type="text"
-              id="search-input"
-              placeholder="Search username..."
-            />
+            <input type="text" id="search-input" placeholder="Search username..." />
             <button id="search-btn" class="btn btn-small">Search</button>
           </div>
-          <div
-            id="search-loading"
-            class="loading-container"
-            style="display: none"
-          >
+          <div id="search-loading" class="loading-container" style="display: none">
             <div class="spinner"></div>
           </div>
           <ul id="search-results" class="user-list"></ul>
@@ -145,11 +121,16 @@
         <div class="messages" id="messages-container"></div>
 
         <div class="message-input glass-card">
-          <textarea
-            id="message-input"
-            placeholder="Type a message..."
-            disabled
-          ></textarea>
+          <textarea id="message-input" placeholder="Type a message..." disabled></textarea>
+          <!-- File chooser button -->
+          <button id="upload-btn" class="btn" disabled title="Choose image">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path
+                fill="currentColor"
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 16H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v12c0 .55-.45 1-1 1zM17 8.5c0-.83-.67-1.5-1.5-1.5S14 7.67 14 8.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM5 18h14v-4l-3-3-5 5-2-2-4 4z"
+              />
+            </svg>
+          </button>
           <button id="send-btn" class="btn" disabled>Send</button>
         </div>
       </div>
@@ -161,6 +142,37 @@
     <script src="js/friends.js"></script>
     <script src="js/settings.js"></script>
     <script>
+      // Add cordova deviceready event
+      document.addEventListener(
+        "deviceready",
+        function () {
+          console.log("Cordova deviceready event fired");
+
+          // Initialize device information if available
+          if (window.device) {
+            console.log("Device platform: " + device.platform);
+            console.log("Device version: " + device.version);
+          } else {
+            console.log("Device plugin not available");
+          }
+
+          // Check for Camera plugin
+          if (navigator.camera) {
+            console.log("Camera plugin available");
+          } else {
+            console.log("Camera plugin not available");
+          }
+
+          // Check for Permissions plugin
+          if (cordova.plugins && cordova.plugins.permissions) {
+            console.log("Permissions plugin available");
+          } else {
+            console.log("Permissions plugin not available");
+          }
+        },
+        false
+      );
+
       // Theme toggle functionality
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("theme-toggle");
